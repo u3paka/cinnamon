@@ -6,14 +6,18 @@ defmodule Cinnamon.Application do
   use Application
 
   def start(_type, _args) do
+    import Supervisor.Spec, warn: false
     # List all child processes to be supervised
     children = [
       # Start the Ecto repository
       Cinnamon.Repo,
       # Start the endpoint when the application starts
-      CinnamonWeb.Endpoint
+      CinnamonWeb.Endpoint,
       # Starts a worker by calling: Cinnamon.Worker.start_link(arg)
-      # {Cinnamon.Worker, arg},
+      {Cinnamon.BotWorker, [[]]},
+      #1. Initialize Bot in main Supervisor proccess as child.
+      #2. Tell main supervisor to monitor Child supervisor MyApp.Bot.
+      #3. Assign it a name as `Slack.Supervisor`
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

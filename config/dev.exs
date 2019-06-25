@@ -68,8 +68,8 @@ config :phoenix, :plug_init_mode, :runtime
 
 # Configure your database
 config :cinnamon, Cinnamon.Repo,
-  username: "postgres",
-  password: "postgres",
+  username: System.get_env("DEV_DB_USER"),
+  password: System.get_env("DEV_DB_PASSWORD"),
   database: "cinnamon_dev",
   hostname: "localhost",
   pool_size: 10

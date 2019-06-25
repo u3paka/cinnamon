@@ -3,7 +3,18 @@
   <p>A productive web framework that<br/>does not compromise speed or maintainability.</p>
 </section>
 
-<section class="row">
+<%= form_for @changeset, @action, [multipart: true], fn f -> %>
+    <div class="form-group">
+        <label>Photo</label>
+        <%= file_input f, :photo, class: "form-control" %>
+    </div>
+
+    <div class="form-group">
+        <%= submit "Submit", class: "btn btn-primary" %>
+    </div>
+<% end %>
+
+ <section class="row">
   <article class="column">
     <h2>Resources</h2>
     <ul>
