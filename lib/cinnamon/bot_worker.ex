@@ -58,8 +58,8 @@ defmodule Cinnamon.BotWorker do
              nil ->
                send_message("lprに非対応のサーバーです。管理者に問い合わせてください。", channel, slack)
              cmd ->
-               result = System.cmd(cmd, [path])
-               send_message("Printig... #{result}", channel, slack)
+               {result, 0} = System.cmd(cmd, [path])
+               send_message("Printing... #{result}", channel, slack)
            end
         end
         {:ok, state}
