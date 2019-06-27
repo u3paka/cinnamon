@@ -4,7 +4,7 @@ defmodule Cinnamon.MixProject do
   def project do
     [
       app: :cinnamon,
-      version: "0.1.1",
+      version: "0.1.2",
       elixir: "~> 1.5",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
@@ -43,8 +43,8 @@ defmodule Cinnamon.MixProject do
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
-      # {:slack, "~> 0.18.0"}
       {:slack, github: "BlakeWilliams/Elixir-Slack", ref: "4812cf8"},
+      {:mantra, github: "u3paka/mantra"},
     ]
   end
 

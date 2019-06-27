@@ -23,8 +23,7 @@ defmodule Cinnamon.BotWorker do
   end
 
   def handle_event(message = %{channel: channel, type: "message", text: text}, slack, state) do
-    "#{text} きてるよー"
-    |> send_message(channel, slack)
+    Cinnamon.Handler.message(text, channel, slack)
     {:ok, state}
   end
 

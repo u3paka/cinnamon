@@ -13,6 +13,7 @@ defmodule Cinnamon.Application do
       Cinnamon.Repo,
       # Start the endpoint when the application starts
       CinnamonWeb.Endpoint,
+      Mantra.Supervisor,
       # Starts a worker by calling: Cinnamon.Worker.start_link(arg)
       {Cinnamon.BotWorker, [[]]},
       #1. Initialize Bot in main Supervisor proccess as child.
