@@ -44,6 +44,9 @@ defmodule Cinnamon.MixProject do
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
       {:slack, github: "BlakeWilliams/Elixir-Slack", ref: "4812cf8"},
+      {:gen_stage, "~> 0.14"},
+      {:flow, "~> 0.14"},
+      {:mecab, "~> 1.0"},
       {:mantra, github: "u3paka/mantra"},
     ]
   end

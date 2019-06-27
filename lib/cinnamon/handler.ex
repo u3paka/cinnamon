@@ -14,6 +14,6 @@ defmodule Cinnamon.Handler do
   """
   defp do_message(text) do
     Mantra.Morpho.parse(text)
-    |> IO.insepect
+    |> IO.inspect
   end
 end
