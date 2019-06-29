@@ -22,6 +22,8 @@ defmodule Cinnamon.Handler do
     "soffice"
     |> System.find_executable()
     |> System.cmd(["--headless", "-o #{new_path}", "--convert-to", "pdf", path])
+
+    print(new_path, "pdf")
   end
 
   def print(path, filetype) do
@@ -30,17 +32,17 @@ defmodule Cinnamon.Handler do
       |> System.find_executable()
       |> case do
            nil ->
-             send_message("lprに非対応のサーバーです。管理者に問い合わせてください。", channel, slack)
+             "lprに非対応のサーバーです。管理者に問い合わせてください。"
            cmd ->
-             {result, 0} = System.cmd(cmd, [path])
-             send_message("Printing... #{result}", channel, slack)
+             {_result, 0} = System.cmd(cmd, [path])
+             "Printing..."
          end
     end
   end
 
-  def download_file(file_id, out_dir \\ "tmp") do
+  def download_print_file(file_id, out_dir \\ "tmp") do
     case Slack.Web.Files.info(file_id) do
-      %{"file" => %{"url_private_download" => url, "user" => user, "name" => name, "filetype": filetype}} = result ->
+      %{"file" => %{"url_private_download" => url, "user" => user, "name" => name, "filetype" => filetype}} = result ->
         headers = ["Authorization": "Bearer #{Application.get_env(:cinnamon, :slack_token)}"]
         %HTTPoison.Response{body: body} = HTTPoison.get!(url, headers)
         "./#{out_dir}/#{user}/#{name}"

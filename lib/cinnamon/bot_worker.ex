@@ -47,27 +47,8 @@ defmodule Cinnamon.BotWorker do
 
   def handle_event(message = %{type: "file_shared", file_id: file_id, channel_id: channel, ts: _ts}, slack, state) do
     IO.inspect message
-    case Slack.Web.Files.info(file_id) do
-      %{"file" => %{"url_private_download" => url, "user" => user, "name" => name, "filetype": filetype}} = result ->
-        headers = ["Authorization": "Bearer #{Application.get_env(:cinnamon, :slack_token)}"]
-        %HTTPoison.Response{body: body} = HTTPoison.get!(url, headers)
-        IO.inspect result
-        path = "./tmp/#{user}/#{name}"
-        path
-        |> Path.dirname
-        |> File.mkdir_p
-        |> case do
-             :ok -> File.write!(path, body)
-             error -> error
-           end
-
-        Cinnamon.Handler.print(path, filetype)
-        {:ok, state}
-
-      error ->
-        IO.inspect error
-        {:ok, state}
-     end
+    IO.inspect Cinnamon.Handler.download_print_file(file_id)
+    {:ok, state}
   end
 
   def handle_event(message = %{type: type}, slack, state) do
