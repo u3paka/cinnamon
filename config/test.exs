@@ -11,8 +11,8 @@ config :logger, level: :warn
 
 # Configure your database
 config :cinnamon, Cinnamon.Repo,
-  username: "postgres",
-  password: "postgres",
+  username: System.get_env("DEV_DB_USER"),
+  password: System.get_env("DEV_DB_PASSWORD"),
   database: "cinnamon_test",
   hostname: "localhost",
   pool: Ecto.Adapters.SQL.Sandbox

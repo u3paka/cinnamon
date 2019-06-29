@@ -19,7 +19,20 @@ defmodule Cinnamon.BotWorker do
   def handle_connect(slack, state) do
     IO.puts "Connected as #{slack.me.id}"
     Agent.start_link(fn -> slack.me.id end, name: UserInfo)
+    Agent.start_link(fn -> Slack.Web.Channels.list()["channels"] end, name: ChannelList)
     {:ok, state}
+  end
+
+  def handle_event(message = %{channel: channel, type: "channel_joined"}, slack, state) do
+   Agent.update(ChannelList, fn state -> [channel | state] end)
+    {:ok, state}
+  end
+
+  def handle_event(message = %{channel: channel, user: user, type: "member_joined_channel", text: text}, slack, state) do
+    username = Slack.Lookups.lookup_user_name(user)
+    channel_name = Slack.Lookups.lookup_channel_name(channel)
+    send_message("ようこそ！#{username}さん、#{channel_name}へ！", channel, slack)
+      {:ok, state}
   end
 
   def handle_event(message = %{channel: channel, type: "message", text: text}, slack, state) do
@@ -35,36 +48,24 @@ defmodule Cinnamon.BotWorker do
   def handle_event(message = %{type: "file_shared", file_id: file_id, channel_id: channel, ts: _ts}, slack, state) do
     IO.inspect message
     case Slack.Web.Files.info(file_id) do
-      %{"file" => %{"url_private_download" => url, "user" => user, "name" => name}} = result ->
+      %{"file" => %{"url_private_download" => url, "user" => user, "name" => name, "filetype": filetype}} = result ->
         headers = ["Authorization": "Bearer #{Application.get_env(:cinnamon, :slack_token)}"]
         %HTTPoison.Response{body: body} = HTTPoison.get!(url, headers)
-
+        IO.inspect result
         path = "./tmp/#{user}/#{name}"
         path
         |> Path.dirname
         |> File.mkdir_p
         |> case do
-             :ok ->
-               File.write!(path, body)
+             :ok -> File.write!(path, body)
              error -> error
            end
-           |> IO.inspect
 
-        if File.exists?(path) do
-        "lpr"
-        |> System.find_executable()
-        |> case do
-             nil ->
-               send_message("lprに非対応のサーバーです。管理者に問い合わせてください。", channel, slack)
-             cmd ->
-               {result, 0} = System.cmd(cmd, [path])
-               send_message("Printing... #{result}", channel, slack)
-           end
-        end
+        Cinnamon.Handler.print(path, filetype)
         {:ok, state}
 
-      result ->
-        IO.inspect result
+      error ->
+        IO.inspect error
         {:ok, state}
      end
   end
