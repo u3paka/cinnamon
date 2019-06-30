@@ -49,7 +49,7 @@ defmodule Cinnamon.Handler do
         "./#{out_dir}/#{user}/#{name}"
         |> save_file(body)
         |> case do
-             {:ok, path} -> print(path, filetype)
+             {:ok, path} -> send_printer(path, filetype)
              err -> IO.inspect err
            end
       error ->
