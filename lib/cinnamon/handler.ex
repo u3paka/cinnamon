@@ -14,19 +14,19 @@ defmodule Cinnamon.Handler do
    cmd
   end
 
-  def print(path, word) when word in ["doc", "docx"] do
+  def send_printer(path, word) when word in ["doc", "docx"] do
     new_path = path
     |> Path.rootname
     |> Kernel.<>(".pdf")
 
     "soffice"
     |> System.find_executable()
-    |> System.cmd(["--headless", "-o #{new_path}", "--convert-to", "pdf", path])
+    |> System.cmd(["--headless", "--convert-to", "pdf", path])
 
-    print(new_path, "pdf")
+    send_printer(new_path, "pdf")
   end
 
-  def print(path, filetype) do
+  def send_printer(path, filetype) do
     if File.exists?(path) do
       "lpr"
       |> System.find_executable()
@@ -34,7 +34,8 @@ defmodule Cinnamon.Handler do
            nil ->
              "lprに非対応のサーバーです。管理者に問い合わせてください。"
            cmd ->
-             {_result, 0} = System.cmd(cmd, [path])
+             {result, 0} = System.cmd(cmd, [path])
+             IO.inspect result
              "Printing..."
          end
     end
